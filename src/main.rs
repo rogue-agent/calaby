@@ -16,6 +16,7 @@ struct CalendarEvent {
     title: String,
     start_time: DateTime<local>,
     end_time: DateTime<local>,
+    location: String,
 }
 
 fn main() {
@@ -52,13 +53,25 @@ fn main() {
                 let start_time = DateTime::parse_from_rfc3339(&record[1]).unwrap().with_timezone(&local);
                 let end_time = DateTime::parse_from_rfc3339(&record[2]).unwrap().with_timezone(&local);
                 //Adds a new CalendarEvent struct to the events vector
-                events.push(CalendarEvent { title, start_time, end_time });
+                events.push(CalendarEvent { title, start_time, end_time, location });
         }
 
         //Iterates over each event in the events vector
         for event in events {
             //Prints out the event in the format HH:MM dd.mm.YYYY
-            println!("{} - {} to {}", event.title, event.start_time.format("%H:%M %d.%m.%Y"), event.end_time.format("%H:%M%d.%m%Y"));
+            println!("{} - {} to {} at {}", event.title, event.start_time.format("at %H:%M on the %d.%m.%Y"), event.end_time.format("%H:%M%d.%m%Y"), event.location);
+        }
+
+        //Creates a folder where the events are saved
+        fs::create_dir_all("calendar_events").unwrap();
+
+        //Writes each event to a seperate file in the folder
+        for (i, event) in events.iter().enumerate() {
+            //Writes the filename where the X is a number that increases for every event
+            let filename = format!("calendar_event_{}.txt", i);
+            let path = PathBuf::from(format!("calendar_events/{}", filename));
+            let mut file = File::create(path).unwrap();
+            writeln!(file, "{} - {} to {} at {}", event.title, event.start_time.format("%H:%M %d.%m.%Y"), event.end_time.format("%H:%M %d.%m.%Y"), event.location).unwrap();
         }
     },
     Err(e) => println!("Error: {:?}", e),
