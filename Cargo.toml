@@ -1,7 +1,7 @@
 [package]
 name = "Calaby Calendar"
 authors = ["Project Abyss CS <admin@abyss.fi>"]
-version = "23.3.1"
+version = "23.3.2"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
